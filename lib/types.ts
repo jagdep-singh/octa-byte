@@ -34,6 +34,7 @@ export interface PortfolioData{
 export interface QuotaResponse {
     [symbol: string]: {
         cmp: number;
+        error?: string;
     };
 }
 
@@ -41,5 +42,6 @@ export interface FundamentalsResponse {
     [symbol: string]: {
         peRatio: number;
         latestEarnings: number;
+        error?: string;
     };
 }
