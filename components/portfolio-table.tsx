@@ -33,35 +33,17 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
       header: 'Stock',
       cell: ({ row }) => (
         <div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{row.original.particulars}</span>
-            <span className="text-xs text-muted-foreground/70 font-normal">
-              {row.original.exchangeCode}
-            </span>
+          <div className="font-medium">
+            {row.original.particulars}
           </div>
-          <div className="text-sm text-muted-foreground">{row.original.sectorName}</div>
+          <div className="text-xs text-muted-foreground/70 font-normal">
+            {row.original.exchangeCode.replace(/\.(NS|BO)$/, '')}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {row.original.sectorName}
+          </div>
         </div>
       ),
-    },
-    {
-      accessorKey: 'purchasePrice',
-      header: 'Purchase Price',
-      cell: ({ row }) => formatCurrency(row.original.purchasePrice),
-    },
-    {
-      accessorKey: 'qty',
-      header: 'Qty',
-      cell: ({ row }) => formatNumber(row.original.qty),
-    },
-    {
-      accessorKey: 'investment',
-      header: 'Investment',
-      cell: ({ row }) => formatCurrency(row.original.investment),
-    },
-    {
-      accessorKey: 'portfolioPercent',
-      header: 'Portfolio %',
-      cell: ({ row }) => `${row.original.portfolioPercent.toFixed(2)}%`,
     },
     {
       accessorKey: 'cmp',
@@ -75,14 +57,21 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
       },
     },
     {
-      accessorKey: 'presentValue',
-      header: 'Present Value',
+      accessorKey: 'gainLossPercent',
+      header: 'Gain/Loss %',
       cell: ({ row }) => {
-        const presentValue = row.original.presentValue;
-        if (presentValue === null || presentValue === undefined) {
+        const gainLossPercent = row.original.gainLossPercent;
+        if (gainLossPercent === null || gainLossPercent === undefined) {
           return <span className="text-muted-foreground">--</span>;
         }
-        return formatCurrency(presentValue);
+        return (
+          <span className={cn(
+            'font-medium',
+            gainLossPercent >= 0 ? 'text-green-600' : 'text-red-600'
+          )}>
+            {formatPercentage(gainLossPercent)}
+          </span>
+        );
       },
     },
     {
@@ -104,22 +93,35 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
       },
     },
     {
-      accessorKey: 'gainLossPercent',
-      header: 'Gain/Loss %',
+      accessorKey: 'presentValue',
+      header: 'Present Value',
       cell: ({ row }) => {
-        const gainLossPercent = row.original.gainLossPercent;
-        if (gainLossPercent === null || gainLossPercent === undefined) {
+        const presentValue = row.original.presentValue;
+        if (presentValue === null || presentValue === undefined) {
           return <span className="text-muted-foreground">--</span>;
         }
-        return (
-          <span className={cn(
-            'font-medium',
-            gainLossPercent >= 0 ? 'text-green-600' : 'text-red-600'
-          )}>
-            {formatPercentage(gainLossPercent)}
-          </span>
-        );
+        return formatCurrency(presentValue);
       },
+    },
+    {
+      accessorKey: 'investment',
+      header: 'Investment',
+      cell: ({ row }) => formatCurrency(row.original.investment),
+    },
+    {
+      accessorKey: 'portfolioPercent',
+      header: 'Portfolio %',
+      cell: ({ row }) => `${row.original.portfolioPercent.toFixed(2)}%`,
+    },
+    {
+      accessorKey: 'purchasePrice',
+      header: 'Purchase Price',
+      cell: ({ row }) => formatCurrency(row.original.purchasePrice),
+    },
+    {
+      accessorKey: 'qty',
+      header: 'Qty',
+      cell: ({ row }) => formatNumber(row.original.qty),
     },
     {
       accessorKey: 'peRatio',
@@ -143,6 +145,15 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
         return formatCurrency(earnings);
       },
     },
+    {
+      accessorKey: 'exchangeCode',
+      header: 'NSE/BSE',
+      cell: ({ row }) => (
+        <span className="font-mono text-sm text-muted-foreground">
+          {row.original.exchangeCode.endsWith('.BO') ? 'BSE' : 'NSE'}
+        </span>
+      ),
+    },
   ], []);
 
   const table = useReactTable({
@@ -164,15 +175,19 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
   }
 
   return (
-    <div className="rounded-md border">
-      <table className="w-full caption-bottom text-sm">
+    <div className="rounded-md border overflow-x-auto">
+      <table className="w-full min-w-[900px] caption-bottom text-sm">
         <thead className="[&_tr]:border-b">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b transition-colors hover:bg-muted/50">
+            <tr key={headerGroup.id} className="group border-b transition-colors hover:bg-muted/50">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                  className={cn(
+                    'h-12 px-4 text-left align-middle font-medium text-muted-foreground',
+                    header.column.id === 'particulars' &&
+                      'sticky left-0 z-20 bg-background group-hover:bg-muted/60 '
+                  )}
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -187,10 +202,17 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="border-b transition-colors hover:bg-muted/50"
+              className="group border-b transition-colors hover:bg-muted/50"
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-4 align-middle">
+                <td
+                    key={cell.id}
+                    className={cn(
+                      'p-4 align-middle',
+                      cell.column.id === 'particulars' &&
+                        'sticky left-0 z-10 bg-background group-hover:bg-muted/60 '
+                    )}
+                  >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
