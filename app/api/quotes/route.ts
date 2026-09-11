@@ -22,6 +22,17 @@ export async function GET() {
             try{
 
                 const quote = await yahooFinance.quote(symbol)
+
+                if (!quote) {
+                    console.error(`No quote found for ${symbol}`)
+
+                    results[symbol] = {
+                        cmp: null,
+                        error: 'No quote found'
+                    }
+
+                    return
+                }
                 results[symbol] = {
                     cmp: quote.regularMarketPrice || 0
                 }

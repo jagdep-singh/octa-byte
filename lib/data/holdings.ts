@@ -40,7 +40,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 504,
     investment: 65520,
     portfolioPercent: 13.24,
-    exchangeCode: 'BAJHOUSING.NS', 
+    exchangeCode: 'BAJAJHFL.NS', 
     sector: 'Financials',
   },
   {
@@ -50,7 +50,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 1080,
     investment: 25920,
     portfolioPercent: 5.24,
-    exchangeCode: 'SAVANI.NS',
+    exchangeCode: 'SAVFI.NS',
     sector: 'Financials',
   },
   // tech
