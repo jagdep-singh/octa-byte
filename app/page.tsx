@@ -3,10 +3,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import { PortfolioData, QuotaResponse, FundamentalsResponse } from '@/lib/types';
 import { PortfolioTable } from '@/components/portfolio-table';
-import { SectorSummary } from '@/components/sector-summary';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { formatCurrency, formatPercentage, cn } from '@/lib/utils';
+import { TopBar } from '@/components/top-bar';
+import { Sidebar } from '@/components/sidebar';
+import { MobileSidebar } from '@/components/mobile-sidebar';
+import { SectorPills } from '@/components/sector-pills';
+import { formatCompact, formatPercentage, cn } from '@/lib/utils';
 import { isMarketOpen } from '@/lib/marketHours';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 export default function Dashboard() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
@@ -14,6 +18,9 @@ export default function Dashboard() {
   const [fundamentals, setFundamentals] = useState<FundamentalsResponse>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [selectedSector, setSelectedSector] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const fetchPortfolio = useCallback(async () => {
     try {
@@ -58,56 +65,52 @@ export default function Dashboard() {
     loadData();
   }, [fetchPortfolio, fetchQuotes, fetchFundamentals]);
 
-  const [isOpen ,setIsOpen] = useState(() => isMarketOpen())
+  const [isOpen, setIsOpen] = useState(() => isMarketOpen());
   useEffect(() => {
     let pollTimer: ReturnType<typeof setInterval> | null = null;
     let watchTimer: ReturnType<typeof setInterval> | null = null;
     let prevOpen: boolean | null = null;
 
-
     const clearPoll = () => {
-        if(pollTimer){
-            clearInterval(pollTimer)
-            pollTimer = null
-        }
-    }
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    };
 
     const sync = () => {
-        const open = isMarketOpen()
-        setIsOpen(open)
-        if(open){
-            if(!pollTimer){
-                pollTimer = setInterval(fetchQuotes , 15000)
-                if(prevOpen === false){
-                    fetchQuotes()
-                }
-            }
-        }else{
-            clearPoll()
+      const open = isMarketOpen();
+      setIsOpen(open);
+      if (open) {
+        if (!pollTimer) {
+          pollTimer = setInterval(fetchQuotes, 15000);
+          if (prevOpen === false) {
+            fetchQuotes();
+          }
         }
+      } else {
+        clearPoll();
+      }
+      prevOpen = open;
+    };
 
-        prevOpen = open
-    }
-
-    sync()
-
-    watchTimer = setInterval(sync , 15000)
+    sync();
+    watchTimer = setInterval(sync, 15000);
     return () => {
-        clearPoll()
-        if(watchTimer) clearInterval(watchTimer)
-    }
-
-  }, [fetchQuotes])
+      clearPoll();
+      if (watchTimer) clearInterval(watchTimer);
+    };
+  }, [fetchQuotes]);
 
   const enrichedSectors = portfolioData?.sectors.map(sector => {
     const enrichedStocks = sector.stocks.map(stock => {
-      const quote = quotes[stock.exchangeCode]
-      const fund = fundamentals[stock.exchangeCode]
+      const quote = quotes[stock.exchangeCode];
+      const fund = fundamentals[stock.exchangeCode];
 
-      const cmp = quote?.cmp || null
-      const presentValue = cmp != null ? cmp * stock.qty : null
-      const gainLoss = presentValue != null ? presentValue - stock.investment : null
-      const gainLossPercent = gainLoss != null ? (gainLoss / stock.investment) * 100 : null
+      const cmp = quote?.cmp || null;
+      const presentValue = cmp != null ? cmp * stock.qty : null;
+      const gainLoss = presentValue != null ? presentValue - stock.investment : null;
+      const gainLossPercent = gainLoss != null ? (gainLoss / stock.investment) * 100 : null;
 
       return {
         ...stock,
@@ -134,74 +137,83 @@ export default function Dashboard() {
   }) || [];
 
   const totalInvestment = portfolioData?.totalInvestment || 0;
-  const totalPresentValue = enrichedSectors.reduce((sum, sector) => sum + sector.totalPresentValue, 0);
+  const totalPresentValue = enrichedSectors.reduce(
+    (sum, sector) => sum + sector.totalPresentValue,
+    0
+  );
   const totalGainLoss = totalPresentValue - totalInvestment;
   const totalGainLossPercent = totalInvestment > 0 ? (totalGainLoss / totalInvestment) * 100 : 0;
 
+  const filteredSectors = selectedSector
+    ? enrichedSectors.filter(s => s.sector === selectedSector)
+    : enrichedSectors;
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Portfolio Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Track your investments in real-time
-          </p>
-        </div>
+      <TopBar
+        isDesktop={isDesktop}
+        onMenuClick={() => setSidebarOpen(true)}
+        sectors={enrichedSectors}
+        selectedSector={selectedSector}
+        onSelectSector={setSelectedSector}
+        lastUpdated={lastUpdated}
+        isOpen={isOpen}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="rounded-lg border p-4">
-            <div className="text-sm text-muted-foreground">Total Investment</div>
-            <div className="text-2xl font-bold">{formatCurrency(totalInvestment)}</div>
-          </div>
-          <div className="rounded-lg border p-4">
-            <div className="text-sm text-muted-foreground">Present Value</div>
-            <div className="text-2xl font-bold">{formatCurrency(totalPresentValue)}</div>
-          </div>
-          <div className="rounded-lg border p-4">
-            <div className="text-sm text-muted-foreground">Total Gain/Loss</div>
-            <div className={cn(
-              'text-2xl font-bold',
-              totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'
-            )}>
-              {formatCurrency(totalGainLoss)}
-            </div>
-          </div>
-          <div className="rounded-lg border p-4">
-            <div className="text-sm text-muted-foreground">Return %</div>
-            <div className={cn(
-              'text-2xl font-bold',
-              totalGainLossPercent >= 0 ? 'text-green-600' : 'text-red-600'
-            )}>
-              {formatPercentage(totalGainLossPercent)}
-            </div>
-          </div>
-        </div>
-
-        {lastUpdated && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-                <span className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium',
-                isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                )}>
-                <span className={cn('h-1.5 w-1.5 rounded-full', isOpen ? 'bg-green-500' : 'bg-red-500')} />
-                {isOpen ? 'Market open' : 'Market closed'}
-                </span>
-            </div>
-        )}
-
-        <ErrorBoundary>
-          <PortfolioTable sectors={enrichedSectors} loading={loading} />
-        </ErrorBoundary>
-
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {enrichedSectors.map(sector => (
-            <ErrorBoundary key={sector.sector}>
-              <SectorSummary sector={sector} />
+      {isDesktop ? (
+        <div className="flex">
+          <Sidebar
+            sectors={enrichedSectors}
+            totalInvestment={totalInvestment}
+            totalPresentValue={totalPresentValue}
+            totalGainLoss={totalGainLoss}
+            totalGainLossPercent={totalGainLossPercent}
+          />
+          <main className="min-w-0 flex-1 p-4 md:p-6">
+            <SectorPills
+              sectors={enrichedSectors}
+              selectedSector={selectedSector}
+              onSelectSector={setSelectedSector}
+              className="mb-5 flex-wrap"
+            />
+            <ErrorBoundary>
+              <PortfolioTable sectors={filteredSectors} loading={loading} />
             </ErrorBoundary>
-          ))}
+          </main>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between gap-1 border-b bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground">
+            <span>Inv {formatCompact(totalInvestment)}</span>
+            <span>PV {formatCompact(totalPresentValue)}</span>
+            <span className={cn('font-medium', totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+              G/L {formatCompact(totalGainLoss)}
+            </span>
+            <span className={cn('font-medium', totalGainLossPercent >= 0 ? 'text-green-600' : 'text-red-600')}>
+              {formatPercentage(totalGainLossPercent)}
+            </span>
+          </div>
+          <div className="px-3 py-3">
+            <ErrorBoundary>
+              <PortfolioTable sectors={filteredSectors} loading={loading} />
+            </ErrorBoundary>
+          </div>
+        </>
+      )}
+
+      {!isDesktop && (
+        <MobileSidebar
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          sectors={enrichedSectors}
+          lastUpdated={lastUpdated}
+          isOpen={isOpen}
+          totalInvestment={totalInvestment}
+          totalPresentValue={totalPresentValue}
+          totalGainLoss={totalGainLoss}
+          totalGainLossPercent={totalGainLossPercent}
+        />
+      )}
     </div>
   );
 }

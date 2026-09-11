@@ -156,6 +156,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
     },
   ], []);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: allStocks,
     columns,
@@ -175,18 +176,18 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
   }
 
   return (
-    <div className="rounded-md border overflow-x-auto">
-      <table className="w-full min-w-[900px] caption-bottom text-sm">
-        <thead className="[&_tr]:border-b">
+    <div className="rounded-md border overflow-auto max-h-[65vh] lg:max-h-[calc(100vh-12rem)]">
+      <table className="w-full min-w-225 caption-bottom text-sm">
+        <thead className="sticky top-0 z-20 bg-background shadow-sm [&_tr]:border-b">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="group border-b transition-colors hover:bg-muted/50">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
                   className={cn(
-                    'h-12 px-4 text-left align-middle font-medium text-muted-foreground',
+                    'h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-background',
                     header.column.id === 'particulars' &&
-                      'sticky left-0 z-20 bg-background group-hover:bg-muted/60 '
+                      'sticky left-0 top-0 z-30 bg-background group-hover:bg-muted/60 border-r'
                   )}
                 >
                   {flexRender(
@@ -210,7 +211,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
                     className={cn(
                       'p-4 align-middle',
                       cell.column.id === 'particulars' &&
-                        'sticky left-0 z-10 bg-background group-hover:bg-muted/60 '
+                        'sticky left-0 z-10 bg-background group-hover:bg-muted/60 border-r'
                     )}
                   >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

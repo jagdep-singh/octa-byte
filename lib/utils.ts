@@ -32,3 +32,12 @@ export function toNumber(value: string): number | null {
     const parsed = parseFloat(value.replace(/[^0-9.\-]/g, ''));
     return Number.isNaN(parsed) ? null : parsed;
 }
+
+export function formatCompact(value: number): string {
+    const abs = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    if (abs >= 1e7) return `${sign}₹${(abs / 1e7).toFixed(1)}Cr`;
+    if (abs >= 1e5) return `${sign}₹${(abs / 1e5).toFixed(1)}L`;
+    if (abs >= 1e3) return `${sign}₹${(abs / 1e3).toFixed(1)}K`;
+    return `${sign}₹${abs.toFixed(0)}`;
+}
