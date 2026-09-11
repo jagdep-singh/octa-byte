@@ -3,16 +3,14 @@ import {holdings} from '@/lib/data/holdings';
 import {fundamentalsCache} from '@/lib/cache';
 import {FundamentalsResponse} from '@/lib/types';
 import {fundamentalScrapper} from '@/lib/googlefinance';
-import { isMarketOpen } from '@/lib/marketHours';
+import { CLOSED_HOURS_TTL, isMarketOpen } from '@/lib/marketHours';
 
 export async function GET() {
-    const cached = fundamentalsCache.get<FundamentalsResponse>('fundamentals')
-    if(cached){
-        return NextResponse.json(cached)
-    }
+    const closed = !isMarketOpen()
 
-    if (!isMarketOpen()) {
-        return NextResponse.json(cached ?? {});
+    const cached = fundamentalsCache.get<FundamentalsResponse>('fundamentals', closed ? CLOSED_HOURS_TTL : undefined)
+    if (cached) {
+        return NextResponse.json(cached)
     }
 
     const results: FundamentalsResponse = {}

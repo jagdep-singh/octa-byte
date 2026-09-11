@@ -4,21 +4,18 @@ import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
 import { resolveSymbols } from '@/lib/symbols';
-import { isMarketOpen } from '@/lib/marketHours';
+import { CLOSED_HOURS_TTL, isMarketOpen } from '@/lib/marketHours';
 
 const yahooFinance = new YahooFinance()
 
 export async function GET() {
-    const cached = quoteCache.get<QuotaResponse>('quotes')
-    if(cached){
+    const closed = !isMarketOpen()
+    
+    const cached = quoteCache.get<QuotaResponse>('quotes', closed ? CLOSED_HOURS_TTL : undefined)
+    if (cached) {
         return NextResponse.json(cached)
     }
 
-
-    if (!isMarketOpen()) {
-        return NextResponse.json(cached ?? {});
-    }
-    
     const results: QuotaResponse = {}
     const uniqSymbols = [...new Set(holdings.map(stock => stock.exchangeCode))]
     const batchSize = 5

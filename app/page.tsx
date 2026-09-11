@@ -134,9 +134,9 @@ export default function Dashboard() {
   }) || [];
 
   const totalInvestment = portfolioData?.totalInvestment || 0;
-  const totalPresentValue = enrichedSectors.reduce((sum, sector) => sum + sector.totalPresentValue,0)
+  const totalPresentValue = enrichedSectors.reduce((sum, sector) => sum + sector.totalPresentValue, 0);
   const totalGainLoss = totalPresentValue - totalInvestment;
-  const totalGainLossPercent = (totalGainLoss / totalInvestment) * 100;
+  const totalGainLossPercent = totalInvestment > 0 ? (totalGainLoss / totalInvestment) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -178,9 +178,16 @@ export default function Dashboard() {
         </div>
 
         {lastUpdated && (
-          <div className="text-sm text-muted-foreground mb-4">
-            Last updated: {lastUpdated.toLocaleTimeString()}
-          </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+                <span className={cn(
+                'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium',
+                isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                )}>
+                <span className={cn('h-1.5 w-1.5 rounded-full', isOpen ? 'bg-green-500' : 'bg-red-500')} />
+                {isOpen ? 'Market open' : 'Market closed'}
+                </span>
+            </div>
         )}
 
         <ErrorBoundary>

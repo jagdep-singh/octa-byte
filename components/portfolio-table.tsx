@@ -33,7 +33,12 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
       header: 'Stock',
       cell: ({ row }) => (
         <div>
-          <div className="font-medium">{row.original.particulars}</div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{row.original.particulars}</span>
+            <span className="text-xs text-muted-foreground/70 font-normal">
+              {row.original.exchangeCode}
+            </span>
+          </div>
           <div className="text-sm text-muted-foreground">{row.original.sectorName}</div>
         </div>
       ),
