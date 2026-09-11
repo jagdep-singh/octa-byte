@@ -68,9 +68,9 @@ export default function Dashboard() {
       const fund = fundamentals[stock.exchangeCode];
 
       const cmp = quote?.cmp || null;
-      const presentValue = cmp ? cmp * stock.qty : null;
-      const gainLoss = presentValue ? presentValue - stock.investment : null;
-      const gainLossPercent = gainLoss ? (gainLoss / stock.investment) * 100 : null;
+      const presentValue = cmp != null ? cmp * stock.qty : null;
+      const gainLoss = presentValue != null ? presentValue - stock.investment : null;
+      const gainLossPercent = gainLoss != null ? (gainLoss / stock.investment) * 100 : null;
 
       return {
         ...stock,

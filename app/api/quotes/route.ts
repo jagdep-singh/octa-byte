@@ -3,7 +3,6 @@ import YahooFinance from 'yahoo-finance2';
 import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
-import { Quote } from 'yahoo-finance2/modules/quote';
 
 const yahooFinance = new YahooFinance()
 
@@ -22,7 +21,7 @@ export async function GET() {
         const promises = batch.map(async (symbol) =>{
             try{
 
-                const quote = await yahooFinance.quote(symbol) as Quote
+                const quote = await yahooFinance.quote(symbol)
                 results[symbol] = {
                     cmp: quote.regularMarketPrice || 0
                 }
@@ -31,7 +30,7 @@ export async function GET() {
 
                 console.error(`Error fetching quote for ${symbol}:`, error)
                 results[symbol] = {
-                    cmp: 0,
+                    cmp: null,
                     error: 'Failed to fetch quote'
                 }
             }
