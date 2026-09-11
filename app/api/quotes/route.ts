@@ -3,6 +3,7 @@ import YahooFinance from 'yahoo-finance2';
 import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
+import { resolveSymbols } from '@/lib/symbols';
 
 const yahooFinance = new YahooFinance()
 
@@ -21,7 +22,7 @@ export async function GET() {
         const promises = batch.map(async (symbol) =>{
             try{
 
-                const quote = await yahooFinance.quote(symbol)
+                const quote = await yahooFinance.quote(resolveSymbols(symbol))
 
                 if (!quote) {
                     console.error(`No quote found for ${symbol}`)

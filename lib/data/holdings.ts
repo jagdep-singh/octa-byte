@@ -50,7 +50,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 1080,
     investment: 25920,
     portfolioPercent: 5.24,
-    exchangeCode: 'SAVFI.NS',
+    exchangeCode: '511577.BO',
     sector: 'Financials',
   },
   // tech

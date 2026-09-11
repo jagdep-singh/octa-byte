@@ -24,3 +24,11 @@ export function formatPercentage(value: number): string {
     return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
 }
 
+export function toGoogleFinanceTicker(exchangeCode: string): string {
+    return `${exchangeCode.replace('.NS', '')}:NSE`;
+}
+
+export function toNumber(value: string): number | null {
+    const parsed = parseFloat(value.replace(/[^0-9.\-]/g, ''));
+    return Number.isNaN(parsed) ? null : parsed;
+}
