@@ -40,8 +40,8 @@ export interface QuotaResponse {
 
 export interface FundamentalsResponse {
     [symbol: string]: {
-        peRatio: number;
-        latestEarnings: number;
+        peRatio: number | null;
+        latestEarnings: number | null;
         error?: string;
     };
 }
