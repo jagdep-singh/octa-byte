@@ -1,10 +1,11 @@
 import {NextResponse} from 'next/server';
-import yahooFinance from 'yahoo-finance2';
+import YahooFinance from 'yahoo-finance2';
 import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
 import { Quote } from 'yahoo-finance2/modules/quote';
 
+const yahooFinance = new YahooFinance()
 
 export async function GET() {
     const cached = quoteCache.get<QuotaResponse>('quotes')
