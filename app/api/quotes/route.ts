@@ -38,7 +38,9 @@ export async function GET() {
                     return
                 }
                 results[symbol] = {
-                    cmp: quote.regularMarketPrice || 0
+                    cmp: quote.regularMarketPrice || 0,
+                    trailingPE: quote.trailingPE ?? null,
+                    epsTrailing12months: quote.epsTrailing12months ?? null
                 }
 
             }catch (error){

@@ -118,8 +118,8 @@ export default function Dashboard() {
         presentValue,
         gainLoss,
         gainLossPercent,
-        peRatio: fund?.peRatio || null,
-        latestEarnings: fund?.latestEarnings || null,
+        peRatio: fund?.peRatio ?? quote?.trailingPE ?? null,
+        latestEarnings: fund?.latestEarnings ?? quote?.epsTrailing12months ?? null,
       };
     });
 

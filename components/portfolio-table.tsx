@@ -149,7 +149,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
       accessorKey: 'exchangeCode',
       header: 'NSE/BSE',
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-muted-foreground">
+        <span className="font-mono text-sm text-foreground">
           {row.original.exchangeCode.endsWith('.BO') ? 'BSE' : 'NSE'}
         </span>
       ),

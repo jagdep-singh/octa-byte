@@ -95,10 +95,7 @@ export function MobileSidebar({
                   isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 )}
               >
-                <span
-                  className={cn('h-1.5 w-1.5 rounded-full', isOpen ? 'bg-green-500' : 'bg-red-500')}
-                />
-                {isOpen ? 'open' : 'closed'}
+                {isOpen ? 'Market Live' : 'Market Closed'}
               </span>
             </div>
           </section>
