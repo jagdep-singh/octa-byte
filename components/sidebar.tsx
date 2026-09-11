@@ -19,7 +19,7 @@ export function Sidebar({
   totalGainLossPercent,
 }: SidebarProps) {
   return (
-    <aside className="w-80 shrink-0 space-y-6 overflow-y-auto border-r p-4">
+    <aside className="sticky top-20 h-[calc(100vh-5rem)] w-80 shrink-0 self-start space-y-6 overflow-y-auto p-4">
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Summary

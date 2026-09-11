@@ -149,7 +149,7 @@ export default function Dashboard() {
     : enrichedSectors;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-dvh flex-col bg-background">
       <TopBar
         isDesktop={isDesktop}
         onMenuClick={() => setSidebarOpen(true)}
@@ -183,7 +183,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between gap-1 border-b bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground">
+          <div className="flex shrink-0 items-center justify-between gap-1 border-b bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground">
             <span>Inv {formatCompact(totalInvestment)}</span>
             <span>PV {formatCompact(totalPresentValue)}</span>
             <span className={cn('font-medium', totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
@@ -193,7 +193,7 @@ export default function Dashboard() {
               {formatPercentage(totalGainLossPercent)}
             </span>
           </div>
-          <div className="px-3 py-3">
+          <div className="min-h-0 flex-1 overflow-hidden px-3 pb-3 pt-3">
             <ErrorBoundary>
               <PortfolioTable sectors={filteredSectors} loading={loading} />
             </ErrorBoundary>

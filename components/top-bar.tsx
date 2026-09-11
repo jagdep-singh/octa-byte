@@ -30,8 +30,7 @@ export function TopBar({
       {isDesktop ? (
         <div className="flex h-20 items-center justify-between px-6">
           <div>
-            <h1 className="text-2xl font-bold">Portfolio Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Track your investments in real-time</p>
+            <h1 className="text-2xl font-bold">Portfolio</h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {lastUpdated && <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>}

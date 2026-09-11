@@ -176,7 +176,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
   }
 
   return (
-    <div className="rounded-md border overflow-auto max-h-[65vh] lg:max-h-[calc(100vh-12rem)]">
+    <div className="h-full overflow-auto md:h-auto md:max-h-[calc(100vh-12rem)] rounded-md border border-[#ffffff0e]">
       <table className="w-full min-w-225 caption-bottom text-sm">
         <thead className="sticky top-0 z-20 bg-background shadow-sm [&_tr]:border-b">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -211,7 +211,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
                     className={cn(
                       'p-4 align-middle',
                       cell.column.id === 'particulars' &&
-                        'sticky left-0 z-10 bg-background group-hover:bg-muted/60 border-r'
+                        'sticky left-0 z-10 bg-background group-hover:bg-muted/60 border-b'
                     )}
                   >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
