@@ -1,6 +1,5 @@
 import { Stock } from '../types';
 
-const TOTAL_INVESTMENT = 495017; 
 
 export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLossPercent' | 'peRatio' | 'latestEarnings'>[] = [
   // Financ
@@ -21,7 +20,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 15,
     investment: 96990,
     portfolioPercent: 19.59,
-    exchangeCode: 'BAJFINANCE.NS',
+    exchangeCode: 'BAJHOUSING.NS',
     sector: 'Financials',
   },
   {
@@ -41,7 +40,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 504,
     investment: 65520,
     portfolioPercent: 13.24,
-    exchangeCode: 'BAJFINANCE.NS', 
+    exchangeCode: 'BAJHOUSING.NS', 
     sector: 'Financials',
   },
   {

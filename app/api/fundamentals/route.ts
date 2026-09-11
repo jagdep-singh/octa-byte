@@ -7,7 +7,7 @@ const exleFundamentals: { [key: string]: { peRatio: number; latestEarnings: numb
     'HDFCBANK.NS': { peRatio: 18.69, latestEarnings: 91.02 },
     'BAJFINANCE.NS': { peRatio: 32.63, latestEarnings: 257.8 },
     'ICICIBANK.NS': { peRatio: 17.68, latestEarnings: 68.72 },
-    'SAVANI.NS': { peRatio: null as any, latestEarnings: null as any },
+    'SAVANI.NS': { peRatio: 0  , latestEarnings: 0},
     'AFFLE.NS': { peRatio: 55.53, latestEarnings: 26.11 },
     'LTIM.NS': { peRatio: 34.69, latestEarnings: 145.92 },
     'KPITTECH.NS': { peRatio: 46.57, latestEarnings: 27.77 },
@@ -28,7 +28,7 @@ const exleFundamentals: { [key: string]: { peRatio: number; latestEarnings: numb
     'DEEPAKNTR.NS': { peRatio: 41.86, latestEarnings: 37.26 },
     'FINEORG.NS': { peRatio: 41.86, latestEarnings: 37.26 },
     'GRAVITA.NS': { peRatio: 41.86, latestEarnings: 37.26 },
-    'SBILIFE.NS': { peRatio: null as any, latestEarnings: -5.82 },
+    'SBILIFE.NS': { peRatio: 0 , latestEarnings: -5.82 },
 };
 
 export async function GET() {

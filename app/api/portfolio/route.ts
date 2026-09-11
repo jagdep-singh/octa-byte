@@ -46,7 +46,7 @@ export async function GET() {
     }
 
     const responce: PortfolioData = {
-        sector: sectors,
+        sectors: sectors,
         totalInvestment,
         totalPresentValue: totalInvestment,
         totalGainLoss: 0

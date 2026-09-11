@@ -25,7 +25,7 @@ export interface SectorGroup {
 }
 
 export interface PortfolioData{
-    sector: SectorGroup[];
+    sectors: SectorGroup[];
     totalInvestment: number;
     totalPresentValue: number;
     totalGainLoss: number;
@@ -33,7 +33,7 @@ export interface PortfolioData{
 
 export interface QuotaResponse {
     [symbol: string]: {
-        cmp: number;
+        cmp: number | null;
         error?: string;
     };
 }

@@ -12,7 +12,7 @@ class MemoryCache{
         this.defaultTTL = defaultTTL;
     }
 
-    set<T>(key: string, data: T, ttl?: number): void{
+    set<T>(key: string, data: T): void{
         this.cache.set(key, 
             {
                 data,
