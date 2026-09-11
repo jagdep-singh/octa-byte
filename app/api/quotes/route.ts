@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server';
-import YahooFinance from 'yahoo-finance2';
+2import YahooFinance from 'yahoo-finance2';
 import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
