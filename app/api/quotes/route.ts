@@ -4,6 +4,7 @@ import {holdings} from '@/lib/data/holdings';
 import {quoteCache} from '@/lib/cache';
 import {QuotaResponse} from '@/lib/types';
 import { resolveSymbols } from '@/lib/symbols';
+import { isMarketOpen } from '@/lib/marketHours';
 
 const yahooFinance = new YahooFinance()
 
@@ -13,6 +14,11 @@ export async function GET() {
         return NextResponse.json(cached)
     }
 
+
+    if (!isMarketOpen()) {
+        return NextResponse.json(cached ?? {});
+    }
+    
     const results: QuotaResponse = {}
     const uniqSymbols = [...new Set(holdings.map(stock => stock.exchangeCode))]
     const batchSize = 5

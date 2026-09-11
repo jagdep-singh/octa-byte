@@ -6,6 +6,7 @@ import { PortfolioTable } from '@/components/portfolio-table';
 import { SectorSummary } from '@/components/sector-summary';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { formatCurrency, formatPercentage, cn } from '@/lib/utils';
+import { isMarketOpen } from '@/lib/marketHours';
 
 export default function Dashboard() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
@@ -57,20 +58,56 @@ export default function Dashboard() {
     loadData();
   }, [fetchPortfolio, fetchQuotes, fetchFundamentals]);
 
+  const [isOpen ,setIsOpen] = useState(() => isMarketOpen())
   useEffect(() => {
-    const interval = setInterval(fetchQuotes, 15000);
-    return () => clearInterval(interval);
-  }, [fetchQuotes]);
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let watchTimer: ReturnType<typeof setInterval> | null = null;
+    let prevOpen: boolean | null = null;
+
+
+    const clearPoll = () => {
+        if(pollTimer){
+            clearInterval(pollTimer)
+            pollTimer = null
+        }
+    }
+
+    const sync = () => {
+        const open = isMarketOpen()
+        setIsOpen(open)
+        if(open){
+            if(!pollTimer){
+                pollTimer = setInterval(fetchQuotes , 15000)
+                if(prevOpen === false){
+                    fetchQuotes()
+                }
+            }
+        }else{
+            clearPoll()
+        }
+
+        prevOpen = open
+    }
+
+    sync()
+
+    watchTimer = setInterval(sync , 15000)
+    return () => {
+        clearPoll()
+        if(watchTimer) clearInterval(watchTimer)
+    }
+
+  }, [fetchQuotes])
 
   const enrichedSectors = portfolioData?.sectors.map(sector => {
     const enrichedStocks = sector.stocks.map(stock => {
-      const quote = quotes[stock.exchangeCode];
-      const fund = fundamentals[stock.exchangeCode];
+      const quote = quotes[stock.exchangeCode]
+      const fund = fundamentals[stock.exchangeCode]
 
-      const cmp = quote?.cmp || null;
-      const presentValue = cmp != null ? cmp * stock.qty : null;
-      const gainLoss = presentValue != null ? presentValue - stock.investment : null;
-      const gainLossPercent = gainLoss != null ? (gainLoss / stock.investment) * 100 : null;
+      const cmp = quote?.cmp || null
+      const presentValue = cmp != null ? cmp * stock.qty : null
+      const gainLoss = presentValue != null ? presentValue - stock.investment : null
+      const gainLossPercent = gainLoss != null ? (gainLoss / stock.investment) * 100 : null
 
       return {
         ...stock,
@@ -97,10 +134,7 @@ export default function Dashboard() {
   }) || [];
 
   const totalInvestment = portfolioData?.totalInvestment || 0;
-  const totalPresentValue = enrichedSectors.reduce(
-    (sum, sector) => sum + sector.totalPresentValue,
-    0
-  );
+  const totalPresentValue = enrichedSectors.reduce((sum, sector) => sum + sector.totalPresentValue,0)
   const totalGainLoss = totalPresentValue - totalInvestment;
   const totalGainLossPercent = (totalGainLoss / totalInvestment) * 100;
 
