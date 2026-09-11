@@ -20,7 +20,7 @@ export const holdings: Omit<Stock, 'cmp' | 'presentValue' | 'gainLoss' | 'gainLo
     qty: 15,
     investment: 96990,
     portfolioPercent: 19.59,
-    exchangeCode: 'BAJHOUSING.NS',
+    exchangeCode: 'BAJFINANCE.NS',
     sector: 'Financials',
   },
   {

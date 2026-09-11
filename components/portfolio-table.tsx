@@ -5,14 +5,17 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  type ColumnDef,
 } from '@tanstack/react-table';
-import { Stock, SectorGroup } from '@/lib/types';
+import { SectorGroup } from '@/lib/types';
 import { formatCurrency, formatNumber, formatPercentage, cn } from '@/lib/utils';
 
 interface PortfolioTableProps {
   sectors: SectorGroup[];
   loading?: boolean;
 }
+
+type TableRow = SectorGroup['stocks'][number] & { sectorName: string };
 
 export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
   const allStocks = useMemo(() => {
@@ -24,7 +27,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
     );
   }, [sectors]);
 
-  const columns = useMemo(() => [
+  const columns = useMemo<ColumnDef<TableRow>[]>(() => [
     {
       accessorKey: 'particulars',
       header: 'Stock',

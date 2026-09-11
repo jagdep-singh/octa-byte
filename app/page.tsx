@@ -14,7 +14,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  // Fetch portfolio data (static)
   const fetchPortfolio = useCallback(async () => {
     try {
       const response = await fetch('/api/portfolio');
@@ -26,7 +25,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Fetch live quotes
   const fetchQuotes = useCallback(async () => {
     try {
       const response = await fetch('/api/quotes');
@@ -39,7 +37,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Fetch fundamentals (once)
   const fetchFundamentals = useCallback(async () => {
     try {
       const response = await fetch('/api/fundamentals');
@@ -51,7 +48,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Initial data fetch
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -61,16 +57,13 @@ export default function Dashboard() {
     loadData();
   }, [fetchPortfolio, fetchQuotes, fetchFundamentals]);
 
-  // Poll quotes every 15 seconds
   useEffect(() => {
     const interval = setInterval(fetchQuotes, 15000);
     return () => clearInterval(interval);
   }, [fetchQuotes]);
 
-  // Merge live data with portfolio
-  const enrichedSectors = portfolioData?.sectors.map(sector => ({
-    ...sector,
-    stocks: sector.stocks.map(stock => {
+  const enrichedSectors = portfolioData?.sectors.map(sector => {
+    const enrichedStocks = sector.stocks.map(stock => {
       const quote = quotes[stock.exchangeCode];
       const fund = fundamentals[stock.exchangeCode];
 
@@ -79,7 +72,6 @@ export default function Dashboard() {
       const gainLoss = presentValue ? presentValue - stock.investment : null;
       const gainLossPercent = gainLoss ? (gainLoss / stock.investment) * 100 : null;
 
-      // Update sector totals
       return {
         ...stock,
         cmp,
@@ -89,19 +81,21 @@ export default function Dashboard() {
         peRatio: fund?.peRatio || null,
         latestEarnings: fund?.latestEarnings || null,
       };
-    }),
-    // Recalculate sector totals
-    totalPresentValue: sector.stocks.reduce((sum, stock) => {
-      const quote = quotes[stock.exchangeCode];
-      const cmp = quote?.cmp || 0;
-      return sum + (cmp * stock.qty);
-    }, 0),
-    get totalGainLoss() {
-      return this.totalPresentValue - sector.totalInvestment;
-    },
-  })) || [];
+    });
 
-  // Calculate overall totals
+    const totalPresentValue = enrichedStocks.reduce(
+      (sum, stock) => sum + (stock.presentValue || 0),
+      0
+    );
+
+    return {
+      ...sector,
+      stocks: enrichedStocks,
+      totalPresentValue,
+      totalGainLoss: totalPresentValue - sector.totalInvestment,
+    };
+  }) || [];
+
   const totalInvestment = portfolioData?.totalInvestment || 0;
   const totalPresentValue = enrichedSectors.reduce(
     (sum, sector) => sum + sector.totalPresentValue,
@@ -120,7 +114,6 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Overall Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="rounded-lg border p-4">
             <div className="text-sm text-muted-foreground">Total Investment</div>
@@ -150,19 +143,16 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Last Updated */}
         {lastUpdated && (
           <div className="text-sm text-muted-foreground mb-4">
             Last updated: {lastUpdated.toLocaleTimeString()}
           </div>
         )}
 
-        {/* Portfolio Table */}
         <ErrorBoundary>
           <PortfolioTable sectors={enrichedSectors} loading={loading} />
         </ErrorBoundary>
 
-        {/* Sector Summaries */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {enrichedSectors.map(sector => (
             <ErrorBoundary key={sector.sector}>
