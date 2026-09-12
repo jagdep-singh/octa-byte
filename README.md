@@ -85,9 +85,8 @@ No API keys, `.env`, or database required — all data is fetched live via scrap
 ## Limitations
 
 - Google Finance scraping depends on current DOM class names; may break if Google changes markup
-- Cache is in-memory only, not persisted across restarts
-- No automated tests yet — `isMarketOpen`, ticker mapping, and number parsing (all pure functions in `lib/`) are the priority candidates
-- Post-close prices are frozen snapshots, not real end-of-day settlement prices
+- Cache is in-memory only
+- Post-close prices are frozen snapshots
 
 ## Project structure
 
