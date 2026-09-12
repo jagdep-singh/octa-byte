@@ -1,19 +1,20 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { Menu ,Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectorGroup } from '@/lib/types';
 import { SectorPills } from '@/components/sector-pills';
 import { cn } from '@/lib/utils';
 
 interface TopBarProps {
-  isDesktop: boolean;
-  onMenuClick: () => void;
-  sectors: SectorGroup[];
-  selectedSector: string | null;
-  onSelectSector: (sector: string | null) => void;
-  lastUpdated: Date | null;
-  isOpen: boolean;
+  isDesktop: boolean
+  onMenuClick: () => void
+  sectors: SectorGroup[]
+  selectedSector: string | null
+  onSelectSector: (sector: string | null) => void
+  lastUpdated: Date | null
+  isOpen: boolean
+  refreshing: boolean
 }
 
 export function TopBar({
@@ -24,6 +25,7 @@ export function TopBar({
   onSelectSector,
   lastUpdated,
   isOpen,
+  refreshing,
 }: TopBarProps) {
   return (
     <header className="sticky top-0 z-30 bg-background">
@@ -33,10 +35,11 @@ export function TopBar({
             <h1 className="text-2xl font-bold">Portfolio</h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {refreshing && <Loader2 className="h-4 w-4 animate-spin" />}
             {lastUpdated && <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>}
             <span
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
+                'inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-medium',
                 isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
               )}
             >
@@ -57,6 +60,7 @@ export function TopBar({
               className="overflow-x-auto pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden"
             />
           </div>
+          {refreshing && <Loader2 className="h-4 w-4 shrink-0 animate-spin" />}
         </div>
       )}
     </header>
