@@ -94,9 +94,9 @@ No API keys, `.env`, or database required — all data is fetched live via scrap
 ```
 app/
   page.tsx                    
-  api/quotes/route.ts         # Yahoo Finance
-  api/fundamentals/route.ts   # Google Finance scrape
-  api/portfolio/route.ts      # static holdings
+  api/quotes/route.ts         
+  api/fundamentals/route.ts   
+  api/portfolio/route.ts      
 lib/
   data/holdings.ts            # portfolio data 
   symbols.ts                  # Yahoo ticker overrides
