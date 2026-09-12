@@ -35,7 +35,7 @@ export interface QuotaResponse {
     [symbol: string]: {
         cmp: number | null;
         trailingPE?: number;
-        epsTrailing12months?: number;
+        epsTrailingTwelveMonths?: number;
         error?: string;
     };
 }
