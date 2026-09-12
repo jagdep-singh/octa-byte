@@ -185,7 +185,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
                 <th
                   key={header.id}
                   className={cn(
-                    'h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-background',
+                    'h-11 px-3 md:h-12 md:px-4 text-left align-middle font-medium text-muted-foreground bg-background',
                     header.column.id === 'particulars' &&
                       'sticky left-0 top-0 z-30 bg-background group-hover:bg-muted/60 border-r'
                   )}
@@ -209,7 +209,7 @@ export function PortfolioTable({ sectors, loading }: PortfolioTableProps) {
                 <td
                     key={cell.id}
                     className={cn(
-                      'p-4 align-middle',
+                      'p-3 md:p-4 align-middle',
                       cell.column.id === 'particulars' &&
                         'sticky left-0 z-10 bg-background group-hover:bg-muted/60 border-b'
                     )}
